@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Meu Ciclo 🌸 — 7 dias grátis</title><style>
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Meu Ciclo 🌸 — 7 dias grátis v2</title><style>
 *{box-sizing:border-box}body{margin:0;font-family:system-ui,Arial;background:#FFF7FB;color:#3B1F2E;padding:16px;padding-bottom:90px}h1{margin:0}.card{background:#fff;border-radius:20px;padding:16px;margin:12px 0;box-shadow:0 4px 16px rgba(236,72,153,.12)}input,select,textarea{width:100%;padding:12px;border:2px solid #FBCFE8;border-radius:12px;margin:6px 0;font-size:16px}button{border:0;border-radius:999px;padding:12px 16px;font-weight:800;cursor:pointer} .primary{background:#EC4899;color:#fff;width:100%} .ghost{background:#fff;border:2px solid #FBCFE8;color:#BE185D} .chip{display:inline-block;padding:8px 12px;border:2px solid #FBCFE8;border-radius:999px;margin:4px;font-weight:700;background:#fff} .chip.on{background:#EC4899;color:#fff;border-color:#EC4899} .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px} .mini{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center} .mini button{padding:8px 0;background:#FFF1F2;color:#3B1F2E} .mini button.sel{background:#EC4899;color:#fff} .tabs{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;border-top:1px solid #FBCFE8} .tabs button{flex:1;background:#fff;color:#9D6B80} .tabs button.on{color:#EC4899} .hero{background:linear-gradient(135deg,#EC4899,#8B5CF6);color:#fff;border-radius:24px;padding:20px} .big{font-size:44px;font-weight:900} .alert{background:#FEF3C7;border:2px solid #F59E0B;border-radius:16px;padding:12px;margin:12px 0} .ok{background:#DCFCE7;border:2px solid #22C55E} .hidden{display:none} label{font-weight:800;font-size:14px}
 </style></head><body>
 
@@ -96,9 +96,10 @@ function checarLicenca(){
   var hoje=new Date(); hoje.setHours(0,0,0,0);
   var inicio=localStorage.getItem('ciclo_trial_start');
   if(!inicio){localStorage.setItem('ciclo_trial_start', hoje.toISOString().slice(0,10)); inicio=hoje.toISOString().slice(0,10);}
-  var dInicio=new Date(inicio+'T12:00:00');
+  var partes=inicio.split('-');
+  var dInicio=new Date(parseInt(partes[0]), parseInt(partes[1])-1, parseInt(partes[2]));
   var dias=Math.floor((hoje-dInicio)/86400000);
-  var restantes=Math.max(0, 7-dias);
+  var restantes=Math.min(7, Math.max(0, 7-dias)); // nunca mostra 8
   var chaveSalva=localStorage.getItem('ciclo_licenca')||'';
   var id=getDeviceId();
   var valida = chaveSalva && chaveSalva===gerarChave(id);
@@ -113,10 +114,10 @@ function checarLicenca(){
 function desbloquear(){
   var v=(document.getElementById('lic-input').value||'').trim().toUpperCase();
   var id=getDeviceId();
-  if(v===gerarChave(id)){ localStorage.setItem('ciclo_licenca', v); document.getElementById('trava-licenca').style.display='none'; var a=document.getElementById('aviso-teste'); if(a) a.style.display='none'; alert('✅ Liberado para sempre neste aparelho! Obrigada 💗'); }
+  if(v===gerarChave(id)){ localStorage.setItem('ciclo_licenca', v); document.getElementById('trava-licenca').style.display='none'; var a=document.getElementById('aviso-teste'); if(a){ a.style.display='block'; a.style.background='#DCFCE7'; a.style.borderColor='#22C55E'; a.innerHTML='✅ Liberado para sempre neste aparelho! Obrigada 💗'; } }
   else { document.getElementById('lic-erro').textContent='❌ Chave inválida para este aparelho. Confira o ID e a chave com quem te vendeu.'; }
 }
-function copiarId(){ var id=getDeviceId(); if(navigator.clipboard){ navigator.clipboard.writeText(id).then(function(){ alert('ID copiado! Manda pra quem te vendeu.'); }); } else { prompt('Copie seu ID:', id); } }
+function copiarId(){ var id=getDeviceId(); if(navigator.clipboard){ navigator.clipboard.writeText(id).then(function(){ var e=document.getElementById('lic-erro'); if(e){ e.style.color='#15803D'; e.textContent='✅ ID copiado! Manda pra quem te vendeu.'; } }); } else { prompt('Copie seu ID:', id); } }
 window.addEventListener('load', function(){ setTimeout(checarLicenca, 100); });
 </script>
 
